@@ -1,14 +1,65 @@
-import Image from "next/image";
+"use client";
+
+import OldForm from "@/app/components/OldForm";
+import InputForm from "@/app/components/InputForm";
+import { useState } from "react";
 
 export default function Page() {
+  const [error, setError] = useState(null);
+  const [choices, setChoices] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleFormSubmit = async (msgUser, msgSystem) => {
+    try {
+      console.log(msgUser, msgSystem);
+      setChoices([]);
+      setIsLoading(true);
+      const response = await fetch("/api/chat-gpt", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          msgSystem,
+          msgUser,
+        }),
+      });
+      setIsLoading(false);
+      const result = await response.json();
+      console.log(result);
+      setChoices(result.choices);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
   return (
-    <div className="mx-10">
-      <h1 className="text-1xl font-bold mt-10">Blogger output</h1>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Augue eget arcu dictum varius duis at consectetur lorem. Ac turpis egestas integer eget aliquet nibh. Tortor pretium viverra suspendisse potenti. Vitae et leo duis ut diam quam nulla. Neque ornare aenean euismod elementum nisi quis eleifend quam adipiscing. Lacus sed turpis tincidunt id aliquet risus feugiat in ante. Et odio pellentesque diam volutpat commodo sed egestas egestas fringilla. Feugiat pretium nibh ipsum consequat nisl vel pretium lectus. Quam vulputate dignissim suspendisse in est. Tellus in metus vulputate eu. Eget arcu dictum varius duis at consectetur lorem donec massa. Nunc mi ipsum faucibus vitae aliquet nec ullamcorper sit amet. Gravida rutrum quisque non tellus orci ac auctor. Amet facilisis magna etiam tempor orci eu lobortis elementum. Ac orci phasellus egestas tellus rutrum tellus pellentesque eu. Erat nam at lectus urna duis convallis convallis tellus id.</p>
-      <p>Erat imperdiet sed euismod nisi porta lorem mollis aliquam ut. Dapibus ultrices in iaculis nunc sed augue lacus. Enim facilisis gravida neque convallis a. Commodo viverra maecenas accumsan lacus. Nec feugiat nisl pretium fusce. Aliquet eget sit amet tellus cras adipiscing enim. Curabitur vitae nunc sed velit dignissim sodales ut. Blandit massa enim nec dui nunc mattis enim ut. Fames ac turpis egestas integer eget aliquet nibh praesent tristique. Diam quis enim lobortis scelerisque fermentum dui faucibus. Ullamcorper morbi tincidunt ornare massa eget egestas purus viverra accumsan. Eget aliquet nibh praesent tristique magna sit amet purus gravida. Quam id leo in vitae turpis massa sed. Cum sociis natoque penatibus et magnis dis. Sed enim ut sem viverra aliquet eget sit. Aenean pharetra magna ac placerat vestibulum. Pulvinar pellentesque habitant morbi tristique senectus. Commodo sed egestas egestas fringilla. Nisl suscipit adipiscing bibendum est.</p>
-      <p>Amet venenatis urna cursus eget. Gravida arcu ac tortor dignissim convallis aenean. Est velit egestas dui id. Vel risus commodo viverra maecenas accumsan lacus vel. Interdum posuere lorem ipsum dolor sit. Imperdiet sed euismod nisi porta lorem. Ultricies mi eget mauris pharetra. Aliquet porttitor lacus luctus accumsan tortor posuere ac. Nulla aliquet porttitor lacus luctus accumsan tortor posuere. Velit aliquet sagittis id consectetur purus ut faucibus pulvinar elementum. Tellus at urna condimentum mattis pellentesque id. Augue mauris augue neque gravida in. Ultrices gravida dictum fusce ut placerat orci nulla pellentesque. Vitae proin sagittis nisl rhoncus. Semper quis lectus nulla at volutpat diam.</p>
-      <p>Id aliquet lectus proin nibh nisl condimentum id venenatis. Vestibulum mattis ullamcorper velit sed ullamcorper morbi tincidunt ornare massa. Lobortis mattis aliquam faucibus purus in massa tempor nec feugiat. Facilisi etiam dignissim diam quis enim lobortis scelerisque fermentum. Id faucibus nisl tincidunt eget nullam non. Quam pellentesque nec nam aliquam sem et tortor consequat id. Sit amet consectetur adipiscing elit ut aliquam. Aliquam nulla facilisi cras fermentum. Sit amet massa vitae tortor condimentum lacinia. Ultrices mi tempus imperdiet nulla malesuada pellentesque elit eget. Lacus sed viverra tellus in hac habitasse. Enim diam vulputate ut pharetra sit. Quam adipiscing vitae proin sagittis nisl rhoncus. Tellus at urna condimentum mattis. Justo nec ultrices dui sapien. Etiam dignissim diam quis enim.</p>
-      <p>Sociis natoque penatibus et magnis dis parturient montes. Iaculis at erat pellentesque adipiscing. Vulputate enim nulla aliquet porttitor lacus. Tellus id interdum velit laoreet id donec. Quisque id diam vel quam. Praesent semper feugiat nibh sed pulvinar proin gravida hendrerit lectus. Diam ut venenatis tellus in metus vulputate eu. Suspendisse potenti nullam ac tortor vitae. Ac odio tempor orci dapibus ultrices. At tempor commodo ullamcorper a lacus vestibulum sed arcu non. Viverra maecenas accumsan lacus vel facilisis volutpat est velit egestas. Erat nam at lectus urna duis convallis convallis. Pharetra sit amet aliquam id. In fermentum posuere urna nec tincidunt praesent semper. Nibh tellus molestie nunc non blandit massa enim nec. Dictumst vestibulum rhoncus est pellentesque. Non curabitur gravida arcu ac tortor dignissim convallis aenean. Massa sed elementum tempus egestas sed sed risus pretium quam. Scelerisque felis imperdiet proin fermentum leo vel orci porta. Nibh venenatis cras sed felis.</p>
+    <div className="flex h-screen overflow-hidden">
+      <div id="left" className="flex-none w-1/3 bg-neutral p-5">
+        <div className="">
+          <h1 className="text-primary">
+            <strong>GPT Blogger</strong>
+          </h1>
+        </div>
+        <InputForm onSubmit={handleFormSubmit} />
+      </div>
+      <div id="right" className="flex-auto overflow-hidden p-5">
+        <div>
+          <h1 className="text-neutral">
+            <strong>Response</strong>
+          </h1>
+        </div>
+        <div className="max-h-full overflow-y-auto my-3">
+          {choices.map((choice) => {
+            return (
+              <div
+                key={choice.index}
+                dangerouslySetInnerHTML={{ __html: choice.message.content }}
+              ></div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
